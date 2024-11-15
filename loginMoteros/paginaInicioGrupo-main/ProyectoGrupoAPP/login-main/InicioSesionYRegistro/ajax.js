@@ -91,7 +91,7 @@ function registerUsuario(event) {
     .catch(error => console.error('Error:', error));
 }
 
-document.getElementById('form_registro_usuario').addEventListener('submit', registerUsuario);
+document.getElementById('form_login').addEventListener('submit', loginClub);
 // Función para iniciar sesión
 function loginClub(event) {
     event.preventDefault();
@@ -100,26 +100,35 @@ function loginClub(event) {
     const passwordClub = document.getElementById('contraseña_club_login').value;
 
     const data = {
-        mail_club: emailClub,
-        contraseña_club: passwordClub
+        mailClub: emailClub,
+        contrasenyaClub: passwordClub
     };
+
+    console.log(data);
 
     fetch('http://localhost:8080/apiMoteros/api/clubs/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorText => { throw new Error(errorText); });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.error) {
             alert(data.error); // Error de inicio de sesión
         } else {
-            alert(data.message); // Inicio de sesión exitoso
-            window.location.href = "delete.html";
-            // Aquí puedes redirigir al usuario o actualizar la interfaz
+            alert("Inicio de sesión exitoso"); // Inicio de sesión exitoso
+            window.location.href = "delete.html"; // Redirigir al usuario
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    });
 }
 
 // Función para eliminar un club
